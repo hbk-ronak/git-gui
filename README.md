@@ -1,0 +1,1 @@
+A custom git gui client for simple git add, git commit and git diff and git push functionality
