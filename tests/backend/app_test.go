@@ -1,9 +1,10 @@
-package backend
+package backend_test
 
 import (
 	"errors"
 	"testing"
 
+	"git-gui/backend"
 	"git-gui/backend/git"
 	"git-gui/backend/types"
 
@@ -21,11 +22,8 @@ func (m *MockGitExecutor) Execute(args ...string) (string, error) {
 	return callArgs.String(0), callArgs.Error(1)
 }
 
-func newTestApp(executor git.GitExecutor) *App {
-	return &App{
-		executor: executor,
-		repo:     &types.GitRepo{Path: "/test/repo", CurrentBranch: "main"},
-	}
+func newTestApp(executor git.GitExecutor) *backend.App {
+	return backend.NewTestApp(executor, &types.GitRepo{Path: "/test/repo", CurrentBranch: "main"})
 }
 
 func TestGetGitStatus_Success(t *testing.T) {
@@ -46,7 +44,7 @@ func TestGetGitStatus_Success(t *testing.T) {
 }
 
 func TestGetGitStatus_NoRepo(t *testing.T) {
-	app := &App{}
+	app := backend.NewApp("")
 	_, err := app.GetGitStatus()
 
 	assert.Error(t, err)
@@ -95,7 +93,7 @@ func TestGetGitDiff_FallsBackToStagedDiff(t *testing.T) {
 }
 
 func TestGetGitDiff_NoRepo(t *testing.T) {
-	app := &App{}
+	app := backend.NewApp("")
 	_, err := app.GetGitDiff("file.txt")
 
 	assert.Error(t, err)
@@ -140,7 +138,8 @@ func TestSwitchBranch_Success(t *testing.T) {
 	err := app.SwitchBranch("develop")
 
 	assert.NoError(t, err)
-	assert.Equal(t, "develop", app.repo.CurrentBranch)
+	repo, _ := app.GetCurrentRepo()
+	assert.Equal(t, "develop", repo.CurrentBranch)
 	mockExec.AssertExpectations(t)
 }
 
@@ -165,7 +164,8 @@ func TestCreateBranch_Success(t *testing.T) {
 	err := app.CreateBranch("feature/new")
 
 	assert.NoError(t, err)
-	assert.Equal(t, "feature/new", app.repo.CurrentBranch)
+	repo, _ := app.GetCurrentRepo()
+	assert.Equal(t, "feature/new", repo.CurrentBranch)
 	mockExec.AssertExpectations(t)
 }
 
@@ -272,7 +272,7 @@ func TestCommitAndPush_PushFails(t *testing.T) {
 }
 
 func TestGetCurrentRepo_NoRepo(t *testing.T) {
-	app := &App{}
+	app := backend.NewApp("")
 	_, err := app.GetCurrentRepo()
 
 	assert.Error(t, err)
@@ -297,7 +297,7 @@ func TestGetRepoRoot_Success(t *testing.T) {
 }
 
 func TestGetRepoRoot_NoRepo(t *testing.T) {
-	app := &App{}
+	app := backend.NewApp("")
 	_, err := app.GetRepoRoot()
 
 	assert.Error(t, err)

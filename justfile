@@ -16,7 +16,7 @@ test: test-backend test-frontend
 
 # Run Go backend tests
 test-backend:
-    go test ./backend/... -v
+    go test ./tests/... -v
 
 # Run frontend tests
 test-frontend:
@@ -27,7 +27,7 @@ lint: lint-backend lint-frontend
 
 # Lint Go code
 lint-backend:
-    go vet ./backend/...
+    go vet ./backend/... ./tests/...
 
 # Lint frontend code
 lint-frontend:

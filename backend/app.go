@@ -24,6 +24,14 @@ func NewApp(projectPath string) *App {
 	return &App{initialPath: projectPath}
 }
 
+// NewTestApp creates an App for testing with a mock executor and repo.
+func NewTestApp(executor git.GitExecutor, repo *types.GitRepo) *App {
+	return &App{
+		executor: executor,
+		repo:     repo,
+	}
+}
+
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods.
 func (a *App) startup(ctx context.Context) {
