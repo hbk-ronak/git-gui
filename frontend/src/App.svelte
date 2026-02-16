@@ -6,7 +6,7 @@
   import CommitPanel from './components/CommitPanel.svelte'
   import ErrorNotification from './components/ErrorNotification.svelte'
   import { files, branches, selectedFile, currentDiff, isLoading, commitMessage, checkedFiles } from './lib/stores.js'
-  import { GetGitStatus, GetGitDiff, GetBranches, GetCurrentRepo, InitRepo } from '../wailsjs/go/main/App.js'
+  import { GetGitStatus, GetGitDiff, GetBranches, GetCurrentRepo, InitRepo } from '../wailsjs/go/backend/App.js'
 
   let hasRepo = false
   let projectPath = ""

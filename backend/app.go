@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"context"
@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	"git-gui/backend/git"
+	"git-gui/backend/types"
 )
 
 // App is the main application struct.
 type App struct {
 	ctx         context.Context
-	executor    GitExecutor
-	repo        *GitRepo
+	executor    git.GitExecutor
+	repo        *types.GitRepo
 	initialPath string
 }
 
@@ -41,15 +44,15 @@ func (a *App) InitRepo(path string) error {
 		return fmt.Errorf("not a git repository: %s", path)
 	}
 
-	executor := NewGitExecutor(path)
+	executor := git.NewGitExecutor(path)
 	root, err := executor.Execute("rev-parse", "--show-toplevel")
 	if err != nil {
 		return fmt.Errorf("failed to find repo root: %w", err)
 	}
 
 	repoPath := strings.TrimSpace(root)
-	a.executor = NewGitExecutor(repoPath)
-	a.repo = &GitRepo{Path: repoPath}
+	a.executor = git.NewGitExecutor(repoPath)
+	a.repo = &types.GitRepo{Path: repoPath}
 
 	branch, err := a.GetCurrentBranch()
 	if err == nil {
@@ -60,7 +63,7 @@ func (a *App) InitRepo(path string) error {
 }
 
 // GetCurrentRepo returns the current git repository info.
-func (a *App) GetCurrentRepo() (*GitRepo, error) {
+func (a *App) GetCurrentRepo() (*types.GitRepo, error) {
 	if a.repo == nil {
 		return nil, errors.New("no repository initialized")
 	}
@@ -74,7 +77,7 @@ func (a *App) ValidateRepo(path string) (bool, error) {
 		return false, err
 	}
 
-	executor := NewGitExecutor(absPath)
+	executor := git.NewGitExecutor(absPath)
 	_, err = executor.Execute("rev-parse", "--git-dir")
 	return err == nil, nil
 }
@@ -88,7 +91,7 @@ func (a *App) GetRepoRoot() (string, error) {
 }
 
 // GetGitStatus returns the list of changed files in the repository.
-func (a *App) GetGitStatus() ([]FileStatus, error) {
+func (a *App) GetGitStatus() ([]types.FileStatus, error) {
 	if a.executor == nil {
 		return nil, errors.New("no repository initialized")
 	}
@@ -98,7 +101,7 @@ func (a *App) GetGitStatus() ([]FileStatus, error) {
 		return nil, fmt.Errorf("failed to get git status: %w", err)
 	}
 
-	files, err := parseGitStatus(output)
+	files, err := git.ParseGitStatus(output)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse git status: %w", err)
 	}
@@ -107,7 +110,7 @@ func (a *App) GetGitStatus() ([]FileStatus, error) {
 }
 
 // GetGitDiff returns the diff for a specific file.
-func (a *App) GetGitDiff(filePath string) (*DiffResult, error) {
+func (a *App) GetGitDiff(filePath string) (*types.DiffResult, error) {
 	if a.executor == nil {
 		return nil, errors.New("no repository initialized")
 	}
@@ -126,7 +129,7 @@ func (a *App) GetGitDiff(filePath string) (*DiffResult, error) {
 		}
 	}
 
-	result, err := parseDiff(filePath, output)
+	result, err := git.ParseDiff(filePath, output)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse diff for %s: %w", filePath, err)
 	}
@@ -135,7 +138,7 @@ func (a *App) GetGitDiff(filePath string) (*DiffResult, error) {
 }
 
 // GetBranches returns all local branches.
-func (a *App) GetBranches() ([]Branch, error) {
+func (a *App) GetBranches() ([]types.Branch, error) {
 	if a.executor == nil {
 		return nil, errors.New("no repository initialized")
 	}
@@ -145,7 +148,7 @@ func (a *App) GetBranches() ([]Branch, error) {
 		return nil, fmt.Errorf("failed to list branches: %w", err)
 	}
 
-	branches, err := parseBranches(output)
+	branches, err := git.ParseBranches(output)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse branches: %w", err)
 	}
@@ -198,7 +201,7 @@ func (a *App) CreateBranch(name string) error {
 }
 
 // CommitFiles stages the specified files and creates a commit.
-func (a *App) CommitFiles(files []string, message string) (*CommitResult, error) {
+func (a *App) CommitFiles(files []string, message string) (*types.CommitResult, error) {
 	if a.executor == nil {
 		return nil, errors.New("no repository initialized")
 	}
@@ -222,10 +225,9 @@ func (a *App) CommitFiles(files []string, message string) (*CommitResult, error)
 		return nil, fmt.Errorf("failed to commit: %w", err)
 	}
 
-	// Extract short SHA from commit output
-	sha := extractCommitSHA(output)
+	sha := git.ExtractCommitSHA(output)
 
-	return &CommitResult{
+	return &types.CommitResult{
 		Success:   true,
 		CommitSHA: sha,
 		Message:   message,
@@ -247,7 +249,7 @@ func (a *App) PushChanges() error {
 }
 
 // CommitAndPush stages files, commits, and pushes in one operation.
-func (a *App) CommitAndPush(files []string, message string) (*CommitResult, error) {
+func (a *App) CommitAndPush(files []string, message string) (*types.CommitResult, error) {
 	result, err := a.CommitFiles(files, message)
 	if err != nil {
 		return nil, err
@@ -258,20 +260,4 @@ func (a *App) CommitAndPush(files []string, message string) (*CommitResult, erro
 	}
 
 	return result, nil
-}
-
-// extractCommitSHA extracts the short commit SHA from git commit output.
-func extractCommitSHA(output string) string {
-	// git commit output typically contains "[branch SHA] message"
-	for _, line := range strings.Split(output, "\n") {
-		line = strings.TrimSpace(line)
-		if strings.Contains(line, "]") {
-			start := strings.Index(line, " ")
-			end := strings.Index(line, "]")
-			if start != -1 && end != -1 && start < end {
-				return strings.TrimSpace(line[start+1 : end])
-			}
-		}
-	}
-	return ""
 }

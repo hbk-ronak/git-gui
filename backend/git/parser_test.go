@@ -1,7 +1,9 @@
-package main
+package git
 
 import (
 	"testing"
+
+	"git-gui/backend/types"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -14,45 +16,45 @@ D  deleted.txt
 ?? untracked.txt
 R  renamed.txt`
 
-	files, err := parseGitStatus(input)
+	files, err := ParseGitStatus(input)
 
 	assert.NoError(t, err)
 	assert.Len(t, files, 6)
 
 	assert.Equal(t, "modified.txt", files[0].Path)
-	assert.Equal(t, StatusModified, files[0].Status)
+	assert.Equal(t, types.StatusModified, files[0].Status)
 	assert.False(t, files[0].Staged)
 
 	assert.Equal(t, "staged.txt", files[1].Path)
-	assert.Equal(t, StatusModified, files[1].Status)
+	assert.Equal(t, types.StatusModified, files[1].Status)
 	assert.True(t, files[1].Staged)
 
 	assert.Equal(t, "added.txt", files[2].Path)
-	assert.Equal(t, StatusAdded, files[2].Status)
+	assert.Equal(t, types.StatusAdded, files[2].Status)
 	assert.True(t, files[2].Staged)
 
 	assert.Equal(t, "deleted.txt", files[3].Path)
-	assert.Equal(t, StatusDeleted, files[3].Status)
+	assert.Equal(t, types.StatusDeleted, files[3].Status)
 	assert.True(t, files[3].Staged)
 
 	assert.Equal(t, "untracked.txt", files[4].Path)
-	assert.Equal(t, StatusUntracked, files[4].Status)
+	assert.Equal(t, types.StatusUntracked, files[4].Status)
 	assert.False(t, files[4].Staged)
 
 	assert.Equal(t, "renamed.txt", files[5].Path)
-	assert.Equal(t, StatusRenamed, files[5].Status)
+	assert.Equal(t, types.StatusRenamed, files[5].Status)
 	assert.True(t, files[5].Staged)
 }
 
 func TestParseGitStatus_EmptyOutput(t *testing.T) {
-	files, err := parseGitStatus("")
+	files, err := ParseGitStatus("")
 
 	assert.NoError(t, err)
 	assert.Empty(t, files)
 }
 
 func TestParseGitStatus_WhitespaceOnly(t *testing.T) {
-	files, err := parseGitStatus("   \n  \n")
+	files, err := ParseGitStatus("   \n  \n")
 
 	assert.NoError(t, err)
 	assert.Empty(t, files)
@@ -61,18 +63,18 @@ func TestParseGitStatus_WhitespaceOnly(t *testing.T) {
 func TestParseGitStatus_WorktreeDeleted(t *testing.T) {
 	input := " D deleted-from-worktree.txt"
 
-	files, err := parseGitStatus(input)
+	files, err := ParseGitStatus(input)
 
 	assert.NoError(t, err)
 	assert.Len(t, files, 1)
-	assert.Equal(t, StatusDeleted, files[0].Status)
+	assert.Equal(t, types.StatusDeleted, files[0].Status)
 	assert.False(t, files[0].Staged)
 }
 
 func TestParseGitStatus_SkipsShortLines(t *testing.T) {
 	input := "ab\n M valid.txt\nxy"
 
-	files, err := parseGitStatus(input)
+	files, err := ParseGitStatus(input)
 
 	assert.NoError(t, err)
 	assert.Len(t, files, 1)
@@ -84,7 +86,7 @@ func TestParseBranches_MultipleBranches(t *testing.T) {
   develop
   feature/login`
 
-	branches, err := parseBranches(input)
+	branches, err := ParseBranches(input)
 
 	assert.NoError(t, err)
 	assert.Len(t, branches, 3)
@@ -101,7 +103,7 @@ func TestParseBranches_MultipleBranches(t *testing.T) {
 }
 
 func TestParseBranches_EmptyOutput(t *testing.T) {
-	branches, err := parseBranches("")
+	branches, err := ParseBranches("")
 
 	assert.NoError(t, err)
 	assert.Empty(t, branches)
@@ -110,7 +112,7 @@ func TestParseBranches_EmptyOutput(t *testing.T) {
 func TestParseBranches_SingleBranch(t *testing.T) {
 	input := "* main\n"
 
-	branches, err := parseBranches(input)
+	branches, err := ParseBranches(input)
 
 	assert.NoError(t, err)
 	assert.Len(t, branches, 1)
@@ -129,7 +131,7 @@ index abc123..def456 100644
  line2
  line3`
 
-	result, err := parseDiff("file.txt", input)
+	result, err := ParseDiff("file.txt", input)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "file.txt", result.FilePath)
@@ -147,7 +149,7 @@ index abc123..def456 100644
 }
 
 func TestParseDiff_EmptyOutput(t *testing.T) {
-	result, err := parseDiff("file.txt", "")
+	result, err := ParseDiff("file.txt", "")
 
 	assert.NoError(t, err)
 	assert.Equal(t, "file.txt", result.FilePath)
@@ -164,7 +166,7 @@ func TestParseDiff_MultipleHunks(t *testing.T) {
 -removed line
  line11`
 
-	result, err := parseDiff("multi.txt", input)
+	result, err := ParseDiff("multi.txt", input)
 
 	assert.NoError(t, err)
 	assert.Len(t, result.Hunks, 2)
@@ -181,7 +183,7 @@ func TestParseDiff_MultipleHunks(t *testing.T) {
 }
 
 func TestParseHunkHeader_Standard(t *testing.T) {
-	hunk, err := parseHunkHeader("@@ -1,3 +1,4 @@")
+	hunk, err := ParseHunkHeader("@@ -1,3 +1,4 @@")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, hunk.OldStart)
@@ -191,7 +193,7 @@ func TestParseHunkHeader_Standard(t *testing.T) {
 }
 
 func TestParseHunkHeader_WithContext(t *testing.T) {
-	hunk, err := parseHunkHeader("@@ -10,6 +12,8 @@ func main()")
+	hunk, err := ParseHunkHeader("@@ -10,6 +12,8 @@ func main()")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 10, hunk.OldStart)
@@ -201,7 +203,7 @@ func TestParseHunkHeader_WithContext(t *testing.T) {
 }
 
 func TestParseHunkHeader_InvalidFormat(t *testing.T) {
-	_, err := parseHunkHeader("not a hunk header")
+	_, err := ParseHunkHeader("not a hunk header")
 
 	assert.Error(t, err)
 }
@@ -209,13 +211,13 @@ func TestParseHunkHeader_InvalidFormat(t *testing.T) {
 func TestExtractCommitSHA(t *testing.T) {
 	output := "[main abc1234] Add new feature\n 1 file changed, 2 insertions(+)\n"
 
-	sha := extractCommitSHA(output)
+	sha := ExtractCommitSHA(output)
 
 	assert.Equal(t, "abc1234", sha)
 }
 
 func TestExtractCommitSHA_NoMatch(t *testing.T) {
-	sha := extractCommitSHA("no commit info here")
+	sha := ExtractCommitSHA("no commit info here")
 
 	assert.Equal(t, "", sha)
 }

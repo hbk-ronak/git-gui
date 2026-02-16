@@ -1,18 +1,20 @@
-package main
+package git
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"git-gui/backend/types"
 )
 
-// parseGitStatus parses the output of `git status --porcelain` into FileStatus structs.
-func parseGitStatus(output string) ([]FileStatus, error) {
+// ParseGitStatus parses the output of `git status --porcelain` into FileStatus structs.
+func ParseGitStatus(output string) ([]types.FileStatus, error) {
 	if strings.TrimSpace(output) == "" {
-		return []FileStatus{}, nil
+		return []types.FileStatus{}, nil
 	}
 
-	var files []FileStatus
+	var files []types.FileStatus
 	lines := strings.Split(strings.TrimRight(output, "\n"), "\n")
 
 	for _, line := range lines {
@@ -24,32 +26,32 @@ func parseGitStatus(output string) ([]FileStatus, error) {
 		workTreeStatus := line[1]
 		path := strings.TrimSpace(line[3:])
 
-		file := FileStatus{Path: path}
+		file := types.FileStatus{Path: path}
 
 		switch {
 		case indexStatus == '?' && workTreeStatus == '?':
-			file.Status = StatusUntracked
+			file.Status = types.StatusUntracked
 			file.Staged = false
 		case indexStatus == 'A':
-			file.Status = StatusAdded
+			file.Status = types.StatusAdded
 			file.Staged = true
 		case indexStatus == 'D':
-			file.Status = StatusDeleted
+			file.Status = types.StatusDeleted
 			file.Staged = true
 		case indexStatus == 'R':
-			file.Status = StatusRenamed
+			file.Status = types.StatusRenamed
 			file.Staged = true
 		case indexStatus == 'M':
-			file.Status = StatusModified
+			file.Status = types.StatusModified
 			file.Staged = true
 		case workTreeStatus == 'M':
-			file.Status = StatusModified
+			file.Status = types.StatusModified
 			file.Staged = false
 		case workTreeStatus == 'D':
-			file.Status = StatusDeleted
+			file.Status = types.StatusDeleted
 			file.Staged = false
 		default:
-			file.Status = StatusModified
+			file.Status = types.StatusModified
 			file.Staged = false
 		}
 
@@ -59,13 +61,13 @@ func parseGitStatus(output string) ([]FileStatus, error) {
 	return files, nil
 }
 
-// parseBranches parses the output of `git branch` into Branch structs.
-func parseBranches(output string) ([]Branch, error) {
+// ParseBranches parses the output of `git branch` into Branch structs.
+func ParseBranches(output string) ([]types.Branch, error) {
 	if strings.TrimSpace(output) == "" {
-		return []Branch{}, nil
+		return []types.Branch{}, nil
 	}
 
-	var branches []Branch
+	var branches []types.Branch
 	lines := strings.Split(strings.TrimRight(output, "\n"), "\n")
 
 	for _, line := range lines {
@@ -76,7 +78,7 @@ func parseBranches(output string) ([]Branch, error) {
 		isCurrent := line[0] == '*'
 		name := strings.TrimSpace(line[2:])
 
-		branches = append(branches, Branch{
+		branches = append(branches, types.Branch{
 			Name:      name,
 			IsCurrent: isCurrent,
 			IsRemote:  false,
@@ -86,12 +88,12 @@ func parseBranches(output string) ([]Branch, error) {
 	return branches, nil
 }
 
-// parseDiff parses unified diff output into a DiffResult.
-func parseDiff(filePath, output string) (*DiffResult, error) {
-	result := &DiffResult{
+// ParseDiff parses unified diff output into a DiffResult.
+func ParseDiff(filePath, output string) (*types.DiffResult, error) {
+	result := &types.DiffResult{
 		FilePath: filePath,
 		Diff:     output,
-		Hunks:    []DiffHunk{},
+		Hunks:    []types.DiffHunk{},
 	}
 
 	if strings.TrimSpace(output) == "" {
@@ -99,16 +101,16 @@ func parseDiff(filePath, output string) (*DiffResult, error) {
 	}
 
 	lines := strings.Split(output, "\n")
-	var currentHunk *DiffHunk
+	var currentHunk *types.DiffHunk
 
 	for _, line := range lines {
 		if strings.HasPrefix(line, "@@") {
 			if currentHunk != nil {
 				result.Hunks = append(result.Hunks, *currentHunk)
 			}
-			hunk, err := parseHunkHeader(line)
+			hunk, err := ParseHunkHeader(line)
 			if err != nil {
-				currentHunk = &DiffHunk{Header: line}
+				currentHunk = &types.DiffHunk{Header: line}
 			} else {
 				currentHunk = hunk
 			}
@@ -124,9 +126,9 @@ func parseDiff(filePath, output string) (*DiffResult, error) {
 	return result, nil
 }
 
-// parseHunkHeader parses a @@ hunk header line like "@@ -1,3 +1,4 @@".
-func parseHunkHeader(header string) (*DiffHunk, error) {
-	hunk := &DiffHunk{Header: header}
+// ParseHunkHeader parses a @@ hunk header line like "@@ -1,3 +1,4 @@".
+func ParseHunkHeader(header string) (*types.DiffHunk, error) {
+	hunk := &types.DiffHunk{Header: header}
 
 	// Extract the range info between @@ markers
 	parts := strings.SplitN(header, "@@", 3)
@@ -161,4 +163,20 @@ func parseHunkHeader(header string) (*DiffHunk, error) {
 	}
 
 	return hunk, nil
+}
+
+// ExtractCommitSHA extracts the short commit SHA from git commit output.
+func ExtractCommitSHA(output string) string {
+	// git commit output typically contains "[branch SHA] message"
+	for _, line := range strings.Split(output, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.Contains(line, "]") {
+			start := strings.Index(line, " ")
+			end := strings.Index(line, "]")
+			if start != -1 && end != -1 && start < end {
+				return strings.TrimSpace(line[start+1 : end])
+			}
+		}
+	}
+	return ""
 }

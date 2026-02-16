@@ -1,14 +1,17 @@
-package main
+package backend
 
 import (
 	"errors"
 	"testing"
 
+	"git-gui/backend/git"
+	"git-gui/backend/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-// MockGitExecutor implements GitExecutor for testing.
+// MockGitExecutor implements git.GitExecutor for testing.
 type MockGitExecutor struct {
 	mock.Mock
 }
@@ -18,10 +21,10 @@ func (m *MockGitExecutor) Execute(args ...string) (string, error) {
 	return callArgs.String(0), callArgs.Error(1)
 }
 
-func newTestApp(executor GitExecutor) *App {
+func newTestApp(executor git.GitExecutor) *App {
 	return &App{
 		executor: executor,
-		repo:     &GitRepo{Path: "/test/repo", CurrentBranch: "main"},
+		repo:     &types.GitRepo{Path: "/test/repo", CurrentBranch: "main"},
 	}
 }
 
@@ -36,9 +39,9 @@ func TestGetGitStatus_Success(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, files, 2)
 	assert.Equal(t, "file.txt", files[0].Path)
-	assert.Equal(t, StatusModified, files[0].Status)
+	assert.Equal(t, types.StatusModified, files[0].Status)
 	assert.Equal(t, "new.txt", files[1].Path)
-	assert.Equal(t, StatusUntracked, files[1].Status)
+	assert.Equal(t, types.StatusUntracked, files[1].Status)
 	mockExec.AssertExpectations(t)
 }
 

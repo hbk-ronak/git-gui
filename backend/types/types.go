@@ -1,4 +1,4 @@
-package main
+package types
 
 // StatusType represents the git status of a file.
 type StatusType string

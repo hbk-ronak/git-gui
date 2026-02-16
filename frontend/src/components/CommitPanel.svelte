@@ -1,6 +1,6 @@
 <script>
   import { commitMessage, checkedFiles, hasCheckedFiles, files, branches, selectedFile, currentDiff, errorMessage, successMessage, isLoading } from '../lib/stores.js'
-  import { CommitFiles, CommitAndPush, GetGitStatus, GetBranches } from '../../wailsjs/go/main/App.js'
+  import { CommitFiles, CommitAndPush, GetGitStatus, GetBranches } from '../../wailsjs/go/backend/App.js'
 
   $: canCommit = $hasCheckedFiles && $commitMessage.trim().length > 0
 

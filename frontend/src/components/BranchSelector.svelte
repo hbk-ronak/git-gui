@@ -1,6 +1,6 @@
 <script>
   import { branches, currentBranch, files, selectedFile, currentDiff, errorMessage, successMessage, isLoading } from '../lib/stores.js'
-  import { SwitchBranch, CreateBranch, GetBranches, GetGitStatus } from '../../wailsjs/go/main/App.js'
+  import { SwitchBranch, CreateBranch, GetBranches, GetGitStatus } from '../../wailsjs/go/backend/App.js'
 
   let dropdownOpen = false
   let showNewBranchModal = false
