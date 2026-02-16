@@ -4,21 +4,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 )
 
 // App is the main application struct.
 type App struct {
-	ctx      context.Context
-	executor GitExecutor
-	repo     *GitRepo
+	ctx         context.Context
+	executor    GitExecutor
+	repo        *GitRepo
+	initialPath string
 }
 
 // NewApp creates a new App application struct.
-func NewApp() *App {
-	return &App{}
+func NewApp(projectPath string) *App {
+	return &App{initialPath: projectPath}
 }
 
 // startup is called when the app starts. The context is saved
@@ -26,12 +26,9 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
-	// Auto-detect git repo from current working directory
-	cwd, err := os.Getwd()
-	if err != nil {
-		return
+	if a.initialPath != "" {
+		_ = a.InitRepo(a.initialPath)
 	}
-	_ = a.InitRepo(cwd)
 }
 
 // InitRepo initializes the app with a git repository at the given path.

@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"flag"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -12,8 +13,12 @@ import (
 var assets embed.FS
 
 func main() {
-	// Create an instance of the app structure
-	app := NewApp()
+	var projectPath string
+	flag.StringVar(&projectPath, "project", "", "path to git project")
+	flag.StringVar(&projectPath, "p", "", "path to git project (shorthand)")
+	flag.Parse()
+
+	app := NewApp(projectPath)
 
 	// Create application with options
 	err := wails.Run(&options.App{
