@@ -125,11 +125,11 @@
   .branch-dropdown {
     width: 200px;
     height: 36px;
-    border: 1px solid #d0d0d0;
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     padding: 8px 12px;
     font-size: 14px;
-    background: #f5f5f5;
+    background: var(--bg-input);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -141,12 +141,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #333;
+    color: var(--text-primary);
   }
 
   .chevron {
     font-size: 8px;
-    color: #666;
+    color: var(--text-secondary);
   }
 
   .dropdown-menu {
@@ -155,10 +155,10 @@
     left: 0;
     width: 200px;
     max-height: 300px;
-    background: #fff;
-    border: 1px solid #d0d0d0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px var(--shadow);
     overflow-y: auto;
     z-index: 100;
   }
@@ -172,17 +172,17 @@
     cursor: pointer;
     font-size: 14px;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    color: #333;
+    color: var(--text-primary);
     box-sizing: border-box;
   }
 
   .dropdown-item:hover {
-    background: #f0f0f0;
+    background: var(--bg-input);
   }
 
   .check {
     width: 12px;
-    color: #0066cc;
+    color: var(--accent);
     font-size: 12px;
   }
 
@@ -193,17 +193,17 @@
   .new-branch-btn {
     height: 36px;
     padding: 8px 16px;
-    border: 1px solid #0066cc;
+    border: 1px solid var(--accent);
     border-radius: 4px;
-    background: #0066cc;
-    color: #fff;
+    background: var(--accent);
+    color: #1e1e1e;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
   }
 
   .new-branch-btn:hover {
-    background: #0052a3;
+    background: var(--accent-hover);
   }
 
   .modal-overlay {
@@ -212,7 +212,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -221,16 +221,17 @@
 
   .modal-box {
     width: 400px;
-    background: #fff;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
     border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 16px var(--shadow);
     padding: 24px;
   }
 
   .modal-header {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin: 0 0 20px 0;
   }
 
@@ -238,11 +239,11 @@
     width: 100%;
     height: 40px;
     padding: 10px 12px;
-    border: 1px solid #d0d0d0;
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     font-size: 14px;
-    background: #fff;
-    color: #333;
+    background: var(--bg-input);
+    color: var(--text-primary);
     margin-bottom: 20px;
     box-sizing: border-box;
   }
@@ -256,10 +257,10 @@
   .cancel-btn {
     height: 40px;
     padding: 10px 20px;
-    border: 1px solid #d0d0d0;
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     background: transparent;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -270,14 +271,14 @@
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
-    background: #0066cc;
-    color: #fff;
+    background: var(--accent);
+    color: #1e1e1e;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
   }
 
   .create-btn:hover {
-    background: #0052a3;
+    background: var(--accent-hover);
   }
 </style>

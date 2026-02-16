@@ -57,18 +57,18 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #fafafa;
-    border-right: 1px solid #e0e0e0;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
   }
 
   .file-list-header {
     height: 40px;
     padding: 12px 16px;
-    background: #f0f0f0;
-    border-bottom: 1px solid #e0e0e0;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -85,23 +85,24 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    border-bottom: 1px solid #e8e8e8;
+    border-bottom: 1px solid var(--border-color);
     cursor: pointer;
     box-sizing: border-box;
   }
 
   .file-item:hover {
-    background: #f0f0f0;
+    background: var(--bg-tertiary);
   }
 
   .file-item.selected {
-    background: #e3f2fd;
+    background: var(--accent-subtle);
   }
 
   input[type="checkbox"] {
     width: 16px;
     height: 16px;
     cursor: pointer;
+    accent-color: var(--accent);
   }
 
   .status-badge {
@@ -118,16 +119,16 @@
     flex-shrink: 0;
   }
 
-  .status-modified { background: #fff3cd; color: #856404; }
-  .status-added { background: #d4edda; color: #155724; }
-  .status-deleted { background: #f8d7da; color: #721c24; }
-  .status-untracked { background: #d1ecf1; color: #0c5460; }
-  .status-renamed { background: #d1ecf1; color: #0c5460; }
+  .status-modified { background: var(--status-modified-bg); color: var(--status-modified-text); }
+  .status-added { background: var(--status-added-bg); color: var(--status-added-text); }
+  .status-deleted { background: var(--status-deleted-bg); color: var(--status-deleted-text); }
+  .status-untracked { background: var(--status-untracked-bg); color: var(--status-untracked-text); }
+  .status-renamed { background: var(--status-untracked-bg); color: var(--status-untracked-text); }
 
   .filename {
     font-size: 13px;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    color: #333;
+    color: var(--text-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -137,7 +138,7 @@
   .empty-state {
     padding: 20px;
     text-align: center;
-    color: #999;
+    color: var(--text-muted);
     font-size: 14px;
   }
 </style>

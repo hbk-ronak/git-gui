@@ -69,8 +69,8 @@
 <style>
   .commit-panel {
     height: 180px;
-    background: #f8f8f8;
-    border-top: 1px solid #e0e0e0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
     padding: 20px;
     box-sizing: border-box;
   }
@@ -79,7 +79,7 @@
     display: block;
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 8px;
   }
 
@@ -87,18 +87,18 @@
     width: 100%;
     height: 80px;
     padding: 12px;
-    border: 1px solid #d0d0d0;
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     font-size: 14px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     resize: vertical;
-    background: #fff;
-    color: #333;
+    background: var(--bg-input);
+    color: var(--text-primary);
     box-sizing: border-box;
   }
 
   .commit-textarea::placeholder {
-    color: #999;
+    color: var(--text-muted);
   }
 
   .button-container {
@@ -111,17 +111,17 @@
   .commit-btn {
     height: 40px;
     padding: 10px 24px;
-    border: 1px solid #0066cc;
+    border: 1px solid var(--accent);
     border-radius: 4px;
-    background: #fff;
-    color: #0066cc;
+    background: transparent;
+    color: var(--accent);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
   }
 
   .commit-btn:hover:not(:disabled) {
-    background: #f0f7ff;
+    background: var(--accent-subtle);
   }
 
   .commit-btn:disabled {
@@ -132,17 +132,17 @@
   .commit-push-btn {
     height: 40px;
     padding: 10px 24px;
-    border: 1px solid #0066cc;
+    border: 1px solid var(--accent);
     border-radius: 4px;
-    background: #0066cc;
-    color: #fff;
+    background: var(--accent);
+    color: #1e1e1e;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
   }
 
   .commit-push-btn:hover:not(:disabled) {
-    background: #0052a3;
+    background: var(--accent-hover);
   }
 
   .commit-push-btn:disabled {

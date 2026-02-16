@@ -1,4 +1,5 @@
 <script>
+  import { onMount, onDestroy } from 'svelte'
   import BranchSelector from './components/BranchSelector.svelte'
   import FileList from './components/FileList.svelte'
   import DiffViewer from './components/DiffViewer.svelte'
@@ -37,8 +38,18 @@
     }
   }
 
-  // Load status on mount
-  loadStatus()
+  function onWindowFocus() {
+    loadStatus()
+  }
+
+  onMount(() => {
+    loadStatus()
+    window.addEventListener('focus', onWindowFocus)
+  })
+
+  onDestroy(() => {
+    window.removeEventListener('focus', onWindowFocus)
+  })
 
   // Load diff when selected file changes
   $: loadDiff($selectedFile)
@@ -74,8 +85,8 @@
 
   .header {
     height: 60px;
-    background: #fff;
-    border-bottom: 1px solid #e0e0e0;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
     padding: 0 20px;
     display: flex;
     align-items: center;
@@ -87,7 +98,7 @@
   .app-title {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
   }
 
   .content {

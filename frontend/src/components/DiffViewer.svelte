@@ -40,14 +40,14 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #fff;
+    background: var(--bg-primary);
   }
 
   .diff-header {
     height: 40px;
     padding: 12px 20px;
-    background: #f8f8f8;
-    border-bottom: 1px solid #e0e0e0;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -58,7 +58,7 @@
     font-size: 14px;
     font-weight: 600;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    color: #333;
+    color: var(--text-primary);
   }
 
   .close-btn {
@@ -66,7 +66,7 @@
     height: 24px;
     border: none;
     background: transparent;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 20px;
     cursor: pointer;
     border-radius: 3px;
@@ -76,7 +76,7 @@
   }
 
   .close-btn:hover {
-    background: #e0e0e0;
+    background: var(--bg-input);
   }
 
   .diff-content {
@@ -95,25 +95,25 @@
   }
 
   .line-added {
-    background: #e6ffed;
-    color: #24292e;
+    background: var(--diff-added-bg);
+    color: var(--diff-added-text);
   }
 
   .line-removed {
-    background: #ffeef0;
-    color: #24292e;
+    background: var(--diff-removed-bg);
+    color: var(--diff-removed-text);
   }
 
   .line-hunk {
-    background: #f6f8fa;
-    color: #0366d6;
+    background: var(--diff-hunk-bg);
+    color: var(--diff-hunk-text);
     font-weight: 600;
     padding: 4px 8px;
     border-radius: 3px;
   }
 
   .line-context {
-    color: #586069;
+    color: var(--diff-context-text);
   }
 
   .empty-state {
@@ -121,7 +121,7 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #999;
+    color: var(--text-muted);
     font-size: 14px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }

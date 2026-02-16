@@ -50,15 +50,15 @@
   }
 
   .error {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
+    background: var(--notify-error-bg);
+    border: 1px solid var(--notify-error-border);
+    color: var(--notify-error-text);
   }
 
   .success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
+    background: var(--notify-success-bg);
+    border: 1px solid var(--notify-success-border);
+    color: var(--notify-success-text);
   }
 
   .dismiss {
